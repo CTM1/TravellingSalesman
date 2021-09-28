@@ -21,13 +21,15 @@ class Anneal():
 
     def anneal(self):
         greedy = Greedy(self.graph)
-        newSolution, self.totalDistance = greedy.run()
+        self.solution, self.totalDistance = greedy.run()
         firstDistance = self.totalDistance
+        firstSolution = self.solution
 
         self.graph.drawGraph()
         while (self.iter < self.stoppingIter and self.T >= self.stoppingTemp):
             x = random.randint(0, len(self.graph.pos) - 1)
             y = random.randint(0, len(self.graph.pos) - 1)
+            newSolution = self.solution.copy()
             newSolution[x], newSolution[y] = newSolution[y], newSolution[x] #Swap two random nodes
             print("New Solution {}".format(newSolution))
 
@@ -57,7 +59,9 @@ class Anneal():
 
         self.drawAnneal()
         print("First Distance: {}".format(firstDistance))
+        print("First Solution: {}".format(firstSolution))
         print("Last Distance: {}".format(self.totalDistance))
+        print("Last Solution: {}".format(self.solution))
         return (self.solution)
 
     def totalDist(self, solution):
