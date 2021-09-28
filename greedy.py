@@ -1,51 +1,32 @@
 from graph import Graph
+import random
 
 class Greedy():
     def __init__(self, graph):
         self.graph = graph
-        self.notVisited = graph.pos.copy()
+        self.unvisited = [i for i in graph.V]
         self.totalDistance = 0
+        self.solution = []
 
-    def run(self):
-        for i in range(0, self.graph.numberOfNodes):
-            min = self.graph.getDistance(i, i + 1)
-            visitedNode = i + 1
+    def run(self, drawEndGraph=False, drawTurnGraph=False):
+        self.totalDistance = 0
+        currNode = self.unvisited[0]
+        self.solution = [currNode]
+        self.unvisited.remove(currNode)
 
-            for node in self.notVisited:
-                dist = self.graph.getDistance(1, node)
-                if (dist < min):
-                    min = dist
-                    visitedNode = node
+        while (self.unvisited):
+            nextNode = min(self.unvisited, key=lambda x: self.graph.getDistance(currNode, x)) # min(iterable, *iterables, key, default)
+            self.unvisited.remove(nextNode)
+            self.solution.append(nextNode)
+            self.graph.addEdge(currNode, nextNode)
+            self.totalDistance += self.graph.getDistance(currNode, nextNode)
+            currNode = nextNode
+            if (drawTurnGraph):
+                self.graph.drawGraph()
 
-            self.notVisited.pop(visitedNode)
-            self.graph.addEdge(i, visitedNode)
-            self.totalDistance += min
+        self.graph.addEdge(nextNode, self.solution[0])
+        self.totalDistance += self.graph.getDistance(nextNode, self.solution[0])
+        if (drawEndGraph):
             self.graph.drawGraph()
 
-            print("graph.pos:")
-            print(self.graph.pos)
-            print("graph.E:")
-            print(self.graph.E)
-            print("notVisited:")
-            print(self.notVisited)
-            print("i:")
-            print(i)
-
-
-
-
-    def printState(self):
-        print("graph.pos:")
-        print(self.graph.pos)
-
-
-g = Graph(5)
-g.addNodes()
-
-greedy = Greedy(g)
-greedy.run()
-
-# Testing for pos copy
-#greedy.notVisited.pop(1)
-#print(greedy.notVisited)
-#print(g.pos)
+        return (self.solution, self.totalDistance)
